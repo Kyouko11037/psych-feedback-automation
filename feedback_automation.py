@@ -111,6 +111,35 @@ FEEDBACK_TEXT = [
     }
 ]
 
+GREETING = 'Доброго времени суток! Вы участвовали в научном исследовании, посвященном перфекционизму. Этот файл содержит обратную связь: названия использованных методик, результаты в баллах и их интерпретацию. Спасибо за участие!'
+
+NAME_OF_LEVEL = ['низкому', 'среднему', 'высокому']
+
+
+def define_level(score: float, low_level: float, high_level: float) -> int:
+    """Определяет и кодирует уровень выраженности черты (0 - низкий, 1 - средний, 2 - высокий)"""
+    if score < low_level:
+        return 0
+    elif score <= high_level:
+        return 1
+    else:
+        return 2
+
+
+def write_feedback(row: list[str]) -> str:
+    """Составляет текст обратной связи на основе данных из строки"""
+    lines = [GREETING]
+    for survey in FEEDBACK_TEXT:
+        lines.append('')
+        lines.append(survey['survey_name'])
+        for scale in survey['scales']:
+            score = float(row[scale['column']])
+            level = define_level(score, scale['low_level'], scale['high_level'])
+            lines.append(scale['name_of_scale'])
+            lines.append(f'Ваш балл: {score}. Это соответствует {NAME_OF_LEVEL[level]} уровню. {scale['text'][level]}')
+    return '\n'.join(lines)
+
+
 number = []
 self_oriented = []
 other_oriented = []
