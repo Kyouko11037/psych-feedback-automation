@@ -1,6 +1,7 @@
 # Примечание: в текущей версии проекта код обрабатывает только две методики - шкалу перфекционизма Хьюита-Флита и опросник временной перспективы Зимбардо
 
 import csv
+from pathlib import Path
 
 # number - номер испытуемого; остальные списки ниже будут содержать соответствующие им шкалы из опросников.
 FEEDBACK_TEXT = [
@@ -115,6 +116,8 @@ GREETING = 'Доброго времени суток! Вы участвовал�
 
 NAME_OF_LEVEL = ['низкому', 'среднему', 'высокому']
 
+RESULT_FOLDER = Path('results')
+
 
 def define_level(score: float, low_level: float, high_level: float) -> int:
     """Определяет и кодирует уровень выраженности черты (0 - низкий, 1 - средний, 2 - высокий)"""
@@ -139,6 +142,18 @@ def write_feedback(row: list[str]) -> str:
             lines.append(f'Ваш балл: {score}. Это соответствует {NAME_OF_LEVEL[level]} уровню. {scale['text'][level]}')
     return '\n'.join(lines)
 
+
+def write_in_files():
+    """Открывает файлы и записывает в них результаты каждого испытуемого"""
+    with open('points.csv',encoding='utf8',newline='') as f:
+        rows = list(csv.reader(f))[1:]
+        RESULT_FOLDER.mkdir(exist_ok = True)
+    for row in rows:
+        (RESULT_FOLDER / f'feedback_{row[0]}').write_text(write_feedback(row), encoding='utf8')
+    print(f'Обработано {len(rows)} испытуемых, соответствующие файлы находятся в папке {RESULT_FOLDER}')
+
+if __name__ == '__main__':
+    write_in_files()
 
 number = []
 self_oriented = []
